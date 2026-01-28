@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class EjemploCreate(BaseModel):
     nombre: str
@@ -9,5 +9,4 @@ class EjemploResponse(BaseModel):
     nombre: str
     descripcion: str | None = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -16,3 +16,8 @@ class Cuenta(BaseModelORM):
     rol = relationship("Rol", back_populates="cuentas")
     proyectos = relationship("CuentaProyecto", back_populates="cuenta", cascade="all, delete-orphan")
     solicitud = relationship("SolicitudCuenta", back_populates="cuenta", uselist=False)
+    historias_creadas = relationship(
+        "HistoriaUsuario",
+        foreign_keys="HistoriaUsuario.creado_por_id",
+        back_populates="creado_por"
+    )

@@ -10,7 +10,7 @@ class EstadoSolicitudEnum(str, Enum):
     APROBADO = "APROBADO"
 
 class SolicitudCuenta(BaseModelORM):
-    __tablename__ = "solicitudes_cuenta"
+    __tablename__ = "solicitudes_cuenta"    
 
     nombre = Column(String(100), nullable=False)
     apellido = Column(String(100), nullable=False)
