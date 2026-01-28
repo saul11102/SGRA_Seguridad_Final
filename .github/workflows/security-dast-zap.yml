@@ -30,12 +30,20 @@ jobs:
       - name: Start FastAPI application
         run: |
           uvicorn main:app --host 0.0.0.0 --port 8000 &
+          # Damos tiempo a que la app responda
           sleep 20
 
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
-        continue-on-error: true
         with:
           target: "http://localhost:8000"
           artifact_name: "zap-report"
           fail_action: false
+          cmd_options: "-J zap_report.json"
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-results
+          path: zap_report.json
