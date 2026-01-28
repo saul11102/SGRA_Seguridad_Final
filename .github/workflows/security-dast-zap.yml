@@ -26,24 +26,34 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Fix permissions for ZAP Docker
+        run: chmod -R 777 .
+
       - name: Start FastAPI application
         run: |
           uvicorn main:app --host 0.0.0.0 --port 8000 &
-          sleep 20 # Esperamos a que el servidor arranque
+          # Esperamos de forma inteligente hasta que el puerto responda
+          echo "Waiting for service to start..."
+          timeout 30s bash -c 'until curl -s http://localhost:8000 > /dev/null; do sleep 2; done'
+          echo "Service is UP!"
 
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
-        # continue-on-error NO es necesario aquí porque ya usas fail_action: false
         with:
           target: "http://localhost:8000"
-          fail_action: false # Esto evita que el pipeline falle si encuentra alertas
-          allow_issue_writing: false # Evitamos que cree Issues en la pestaña Issues
-          # ZAP genera automáticamente un archivo llamado 'zap-scan-results.sarif'
+          fail_action: false
+          allow_issue_writing: false
+          cmd_options: "-J zap_report.json"
 
-      # --- ESTE ES EL PASO QUE TE FALTABA ---
+      - name: Convert ZAP JSON report to SARIF
+        if: always() # Ejecutar aunque el escaneo encuentre fallos
+        run: |
+          npm install -g zap-sarif
+          zap-sarif zap_report.json --output zap-scan-results.sarif
+
       - name: Upload ZAP Results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
-        if: always() # Importante: Ejecutar aunque ZAP encuentre errores
+        if: always()
         with:
           sarif_file: zap-scan-results.sarif
-          category: zap-dast # Etiqueta para que no se mezcle con Snyk o CodeQL
+          category: zap-dast
