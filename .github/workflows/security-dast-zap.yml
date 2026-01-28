@@ -12,7 +12,6 @@ permissions:
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,12 +29,21 @@ jobs:
       - name: Start FastAPI application
         run: |
           uvicorn main:app --host 0.0.0.0 --port 8000 &
-          sleep 20
+          sleep 20 # Esperamos a que el servidor arranque
 
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
-        continue-on-error: true
+        # continue-on-error NO es necesario aquí porque ya usas fail_action: false
         with:
           target: "http://localhost:8000"
-          artifact_name: "zap-report"
-          fail_action: false
+          fail_action: false # Esto evita que el pipeline falle si encuentra alertas
+          allow_issue_writing: false # Evitamos que cree Issues en la pestaña Issues
+          # ZAP genera automáticamente un archivo llamado 'zap-scan-results.sarif'
+
+      # --- ESTE ES EL PASO QUE TE FALTABA ---
+      - name: Upload ZAP Results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() # Importante: Ejecutar aunque ZAP encuentre errores
+        with:
+          sarif_file: zap-scan-results.sarif
+          category: zap-dast # Etiqueta para que no se mezcle con Snyk o CodeQL
