@@ -1,0 +1,84 @@
+# name: 01 - Main CI / CD Pipeline
+
+# on:
+#   push:
+#     paths-ignore:
+#       - '**/*.md'
+#       - '**/*.txt'
+#   workflow_dispatch:
+
+# permissions:
+#   contents: read
+#   issues: read
+#   checks: write
+#   pull-requests: write
+#   actions: read
+#   security-events: write
+#   packages: write
+
+# jobs:
+#   build:
+#     name: Build
+#     uses: ./.github/workflows/build.yml
+#     secrets: inherit
+
+#   sca:
+#     needs: build
+#     name: SCA
+#     uses: ./.github/workflows/sca.yml
+#     secrets: inherit
+
+#   sast:
+#     needs: build
+#     name: SAST
+#     uses: ./.github/workflows/sast.yml
+#     secrets: inherit
+
+#   license-compliance:
+#     needs: build
+#     name: License Compliance
+#     uses: ./.github/workflows/license-compliance.yml
+#     secrets: inherit
+
+#   docker:
+#     needs: build
+#     name: Build docker image
+#     uses: ./.github/workflows/docker.yml
+#     secrets: inherit
+
+#   container-image-scan:
+#     needs: docker
+#     name: Container Image Scan
+#     uses: ./.github/workflows/container-image-scan.yml
+#     secrets: inherit
+#     with:
+#       image-tag: ${{ needs.docker.outputs.image-tag }}
+
+#   dast:
+#     needs: [build, docker]
+#     name: DAST Scan
+#     uses: ./.github/workflows/dast.yml
+#     secrets: inherit
+#     with:
+#       image-tag: ${{ needs.docker.outputs.image-tag }}
+
+
+# -----------------------------------------
+# WORKFLOW MÍNIMO PARA INICIALIZAR PROYECTO
+# -----------------------------------------
+
+name: initial-setup
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirmar inicialización
+        run: echo "Proyecto inicializado correctamente."

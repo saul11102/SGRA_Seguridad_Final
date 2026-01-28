@@ -1,0 +1,13 @@
+[project]
+name = "SGRA"
+version = "0.1.0"
+
+[tool.setuptools.packages.find]
+include = ["app"]
+
+[project.scripts]
+start = "app.main:run"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

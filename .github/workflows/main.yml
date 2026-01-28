@@ -1,0 +1,41 @@
+name: Main Security Pipeline
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  security-events: write
+  issues: write
+  checks: write
+  actions: read
+
+jobs:
+  # initial-setup
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirmar inicialización
+        run: echo "Pipeline de seguridad inicializado correctamente."
+
+  # SAST - Snyk
+  security-sast-snyk:
+    needs: setup
+    uses: ./.github/workflows/security-sast-snyk.yml
+    secrets: inherit
+
+  # SAST - CodeQL
+  security-sast-codeql:
+    needs: setup
+    uses: ./.github/workflows/security-sast-codeql.yml
+    secrets: inherit
+
+  # DAST - OWASP ZAP
+  security-dast-zap:
+    needs: setup
+    uses: ./.github/workflows/security-dast-zap.yml
+    secrets: inherit
