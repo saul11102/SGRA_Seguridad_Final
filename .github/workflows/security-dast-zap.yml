@@ -42,22 +42,17 @@ jobs:
         run: |
           chmod -R 777 .
 
-      - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
+      - name: ZAP Scan (Full Scan)
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
-          target: "http://localhost:8000"
-          fail_action: false
-          cmd_options: "-a"
+          target: "http://localhost:8080/"
+          issue_title: "Reporte de Seguridad DAST"
 
-      - name: Listar archivos generados
-        run: ls -la
-
-      - name: Fix permissions for Upload (Post-scan)
-        if: always()
-        run: sudo chmod -R 777 .
-
-      - name: Upload ZAP Report to Security Tab
-        uses: github/codeql-action/upload-sarif@v4
-        if: always() # Ejecutar incluso si ZAP encuentra fallos
+      - name: Subir Reporte Final
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: zap-scan-results.sarif
+          name: reporte-seguridad-zap
+          path: |
+            report_html.html
+            report_md.md
+            report_json.json
