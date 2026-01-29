@@ -58,3 +58,9 @@ jobs:
             zap_report.html
             zap_report.json
             zap_report.md
+
+      - name: Upload SARIF post-scan
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "results.sarif"
