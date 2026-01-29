@@ -26,3 +26,4 @@ passlib[bcrypt]
 bcrypt
 python-multipart
 PyJWT
+email-validator>=2.0.0
