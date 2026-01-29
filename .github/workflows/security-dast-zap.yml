@@ -49,23 +49,8 @@ jobs:
           fail_action: false
           cmd_options: "-a -r zap_report.html -J zap_report.json -w zap_report.md"
 
-      - name: Convert ZAP JSON to SARIF
-        run: |
-          npm install -g zap-sarif
-          zap-sarif -i zap_report.json -o results.sarif
-
-      - name: Upload ZAP Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-security-report
-          path: |
-            zap_report.html
-            zap_report.json
-            zap_report.md
-
-      - name: Upload SARIF post-scan
-        if: always()
+      - name: Upload ZAP Report to Security Tab
         uses: github/codeql-action/upload-sarif@v3
+        if: always() # Ejecutar incluso si ZAP encuentra fallos
         with:
-          sarif_file: "results.sarif"
+          sarif_file: zap-scan-results.sarif
