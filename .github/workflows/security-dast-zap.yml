@@ -34,7 +34,6 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
-          # Iniciar app en background
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 20
 
@@ -47,7 +46,7 @@ jobs:
         with:
           target: "http://localhost:8000"
           fail_action: false
-          cmd_options: "-a -r zap_report.html -J zap_report.json -w zap_report.md"
+          cmd_options: "-a -r zap_report.html -J zap_report.json -w zap_report.md -S results.sarif"
 
       - name: Upload ZAP Report
         if: always()
@@ -58,9 +57,10 @@ jobs:
             zap_report.html
             zap_report.json
             zap_report.md
+            results.sarif
 
       - name: Upload SARIF post-scan
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "results.sarif"
