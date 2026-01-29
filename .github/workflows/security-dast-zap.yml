@@ -28,7 +28,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Start FastAPI application
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 20
 
