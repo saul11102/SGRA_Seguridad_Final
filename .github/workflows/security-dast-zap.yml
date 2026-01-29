@@ -30,6 +30,7 @@ jobs:
       - name: Start FastAPI application
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
