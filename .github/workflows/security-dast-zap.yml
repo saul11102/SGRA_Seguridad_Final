@@ -34,8 +34,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
-
-          # Iniciar app
+          # Iniciar app en background
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 20
 
@@ -48,14 +47,14 @@ jobs:
         with:
           target: "http://localhost:8000"
           fail_action: false
-          cmd_options: "-a"
+          cmd_options: "-a -r zap_report.html -J zap_report.json -w zap_report.md"
 
       - name: Upload ZAP Report
-        if: always() # Se ejecuta aunque ZAP encuentre fallos
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: zap-scan-report
+          name: zap-security-report
           path: |
-            zap-report.html
-            zap-report.json
-            zap-report.md
+            zap_report.html
+            zap_report.json
+            zap_report.md
