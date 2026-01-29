@@ -47,10 +47,17 @@ jobs:
         with:
           target: "http://localhost:8000"
           fail_action: false
-          cmd_options: "-a -r zap_report.html -J zap_report.json -w zap_report.md"
+          cmd_options: "-a"
+
+      - name: Listar archivos generados
+        run: ls -la
+
+      - name: Fix permissions for Upload (Post-scan)
+        if: always()
+        run: sudo chmod -R 777 .
 
       - name: Upload ZAP Report to Security Tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always() # Ejecutar incluso si ZAP encuentra fallos
         with:
           sarif_file: zap-scan-results.sarif
